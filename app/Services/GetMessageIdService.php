@@ -22,7 +22,8 @@ class GetMessageIdService extends BaseService
 
             if (count($messages) < 5) {
                 Log::warning('Less than 5 messages found, exiting.');
-                exit(0);
+                return '';
+                // exit(0);
             }
 
             $msgIds = array_map(fn($msg) => $msg['id'], $messages);
