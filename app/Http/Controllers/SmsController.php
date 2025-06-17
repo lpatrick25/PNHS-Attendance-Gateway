@@ -13,6 +13,12 @@ class SmsController extends Controller
 {
     public function process(Request $request): JsonResponse
     {
+        // Validate request parameters
+        $request->validate([
+            'phone_number' => 'required|string',
+            'message' => 'required|string',
+        ]);
+
         // Login
         $loginService = new LoginService();
         $loginSuccess = $loginService->initLogin('user', '@l03e1t3');
@@ -23,7 +29,7 @@ class SmsController extends Controller
 
         // Send SMS
         $sendService = new SendMessageService();
-        $smsResponse = $sendService->sendSms('09918338189', 'Working!');
+        $smsResponse = $sendService->sendSms($request->input('phone_number'), $request->input('message'));
 
         if (!$smsResponse) {
             return response()->json(['error' => 'Failed to send SMS'], 500);
@@ -34,12 +40,10 @@ class SmsController extends Controller
         $messageIds = $getMessageIdService->getMessageId();
 
         if (empty($messageIds)) {
-            return response()->json(['error' => 'No message IDs retrieved'], 500);
+            // Delete Messages
+            $deleteService = new DeleteHistoryService();
+            $deleteSuccess = $deleteService->deleteMessage($messageIds);
         }
-
-        // Delete Messages
-        $deleteService = new DeleteHistoryService();
-        $deleteSuccess = $deleteService->deleteMessage($messageIds);
 
         return response()->json([
             'login' => $loginSuccess,

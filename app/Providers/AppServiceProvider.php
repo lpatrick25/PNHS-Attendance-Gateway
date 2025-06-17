@@ -2,22 +2,21 @@
 
 namespace App\Providers;
 
+use App\Models\LoginLog;
+use App\Models\LogoutLog;
+use App\Observers\LoginLogObserver;
+use App\Observers\LogoutLogObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function boot()
     {
-        //
+        LoginLog::observe(LoginLogObserver::class);
+        LogoutLog::observe(LogoutLogObserver::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+    public function register()
     {
         //
     }
